@@ -1,0 +1,17 @@
+# OmniCode benchmark repo list.
+# One entry per line. Each can be:
+#   - a local absolute path to a repository, or
+#   - a public GitHub HTTPS URL (shallow-cloned into the OmniCode cache, then indexed).
+# Lines starting with # are ignored.
+#
+# Run:  npm run bench -- benchmarks/repos.txt --out .omnicode-bench
+#
+# Small, public, multi-language examples to prove coverage-complete savings:
+
+https://github.com/sindresorhus/slugify
+https://github.com/expressjs/express
+https://github.com/pallets/flask
+https://github.com/gin-gonic/gin
+
+# Add your own repos below (local paths work too):
+# /absolute/path/to/your/project
