@@ -1,0 +1,30 @@
+# Build artifacts
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Runtime index DBs and caches
+.omnicode/
+.omnicode-bench-gotham/
+*.db
+*.db-shm
+*.db-wal
+
+# Local audit + bench output
+audit.fallback.log
+.omnicode-bench/
+benchmarks/*.ndjson
+benchmarks/*.json
+
+# Editor / OS junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Models (large, regenerable)
+models/
+*.onnx
+*.bin
