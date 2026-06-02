@@ -1,0 +1,68 @@
+{
+  "name": "omnicode-mcp",
+  "version": "0.1.0",
+  "description": "Coverage-complete code intelligence MCP server: index any repo into a queryable graph, account for every file, save ~99% of agent context tokens.",
+  "keywords": ["mcp", "model-context-protocol", "code-intelligence", "ast", "tree-sitter", "token-savings", "claude", "cursor", "codex"],
+  "license": "MIT",
+  "main": "dist/server.js",
+  "types": "dist/server.d.ts",
+  "bin": {
+    "omnicode": "./dist/cli.js"
+  },
+  "files": [
+    "dist/",
+    "docs/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "tsc",
+    "start": "node dist/server.js",
+    "serve": "node dist/server.js",
+    "status": "node dist/cli.js status",
+    "mcp-config": "node dist/cli.js mcp-config",
+    "benchmark": "node dist/cli.js benchmark",
+    "bench": "node dist/cli.js bench-many",
+    "bench-many": "node dist/cli.js bench-many",
+    "sweep": "node dist/cli.js sweep",
+    "clone-index": "node dist/cli.js clone-index",
+    "download:embeddings": "node scripts/download-embedding-model.mjs",
+    "test": "node scripts/test-trust-layer.mjs && node scripts/test-resolvers.mjs && node scripts/test-benchmark-selector.mjs && node scripts/test-resumable-index.mjs && node scripts/test-db-path-identity.mjs && node scripts/test-benchmark-child-timeout.mjs && node scripts/test-semantic-channel.mjs && node scripts/test-car-phase-one.mjs && node scripts/test-skill-pack.mjs",
+    "test:trust": "node scripts/test-trust-layer.mjs",
+    "test:resolvers": "node scripts/test-resolvers.mjs",
+    "test:token-layer": "node scripts/test-token-layer.mjs",
+    "test:benchmark-selector": "node scripts/test-benchmark-selector.mjs",
+    "test:resumable-index": "node scripts/test-resumable-index.mjs",
+    "test:db-path": "node scripts/test-db-path-identity.mjs",
+    "test:child-timeout": "node scripts/test-benchmark-child-timeout.mjs",
+    "test:semantic": "node scripts/test-semantic-channel.mjs",
+    "test:car": "node scripts/test-car-phase-one.mjs",
+    "test:skill-pack": "node scripts/test-skill-pack.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.5.0",
+    "better-sqlite3": ">=11",
+    "chokidar": "^3.6.0",
+    "commander": "^13.1.0",
+    "fuse.js": "^7.0.0",
+    "tree-sitter": "0.21.1",
+    "tree-sitter-javascript": "0.21.4",
+    "tree-sitter-typescript": "0.21.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.13.4",
+    "typescript": "^5.7.3"
+  },
+  "optionalDependencies": {
+    "onnxruntime-node": "1.26.0",
+    "tokenizers": "0.13.4-rc2",
+    "tree-sitter-python": "0.21.0",
+    "tree-sitter-rust": "0.21.0",
+    "tree-sitter-go": "0.21.2",
+    "tree-sitter-c-sharp": "0.21.3"
+  }
+}

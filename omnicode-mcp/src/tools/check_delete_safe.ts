@@ -1,0 +1,27 @@
+import { initDb } from '../store/db';
+
+export async function checkDeleteSafe(repoPath: string, symbolName: string) {
+  const db = initDb(repoPath);
+
+  const targetSymbol = db.prepare(`SELECT * FROM symbols WHERE name = ? COLLATE NOCASE`).get(symbolName) as any;
+  if (!targetSymbol) {
+    return { result: `Symbol '${symbolName}' not found in index.` };
+  }
+
+  const incoming = db.prepare(`SELECT from_symbol FROM edges WHERE to_symbol = ?`).all(targetSymbol.id) as any[];
+  
+  if (incoming.length === 0) {
+    return { result: `Verdict: SAFE TO DELETE. '${symbolName}' has no incoming dependencies across the indexed repository.` };
+  }
+
+  let report = `Verdict: NOT SAFE TO DELETE. '${symbolName}' is used by ${incoming.length} other symbols:\n`;
+  for (const edge of incoming) {
+    const caller = db.prepare(`SELECT s.name, s.kind, f.path FROM symbols s JOIN files f ON s.file_id = f.id WHERE s.id = ?`).get(edge.from_symbol) as any;
+    if (caller) {
+      report += `- [${caller.kind}] ${caller.name} in ${caller.path}\n`;
+    }
+  }
+
+  report += `\nRecommendation: You must update or remove these references before deleting '${symbolName}'.`;
+  return { result: report };
+}
