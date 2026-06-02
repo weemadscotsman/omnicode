@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OmniCode MCP — Coverage-Complete Code Intelligence for AI Agents</title>
+<meta name="description" content="Stop paying AI to read the whole file. OmniCode indexes any repo into a queryable graph, with 99.6% measured token savings, zero unknown files, and a layered 41-tool MCP surface.">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg-soft: #11171f;
+    --bg-card: #161d27;
+    --border: #232b36;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --accent-2: #3fb950;
+    --warn: #d29922;
+    --danger: #f85149;
+    --mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre {
+    font-family: var(--mono);
+    font-size: 0.9em;
+  }
+  pre {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  pre code { color: var(--text); }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(10, 14, 20, 0.9);
+    backdrop-filter: blur(12px);
+    z-index: 10;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 6px;
+    display: grid; place-items: center;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--bg);
+  }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a { color: var(--text-dim); font-size: 14px; }
+  .nav-links a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    padding: 80px 0 60px;
+    text-align: center;
+  }
+  .eyebrow {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    font-family: var(--mono);
+  }
+  .eyebrow .v {
+    background: var(--accent-2);
+    color: var(--bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    margin-right: 4px;
+  }
+  h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  h1 .grad {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .sub {
+    font-size: 20px;
+    color: var(--text-dim);
+    max-width: 720px;
+    margin: 0 auto 36px;
+  }
+  .install {
+    max-width: 640px;
+    margin: 0 auto 16px;
+  }
+  .install-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    text-align: left;
+    margin-bottom: 6px;
+    font-family: var(--mono);
+  }
+  .install pre {
+    text-align: left;
+    font-size: 14px;
+  }
+  .install pre .prompt { color: var(--accent-2); }
+  .install pre .cmd { color: var(--text); }
+  .install pre .comment { color: var(--text-dim); }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 60px 0;
+  }
+  .stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 40px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Sections */
+  section { padding: 60px 0; }
+  h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--text);
+  }
+  .section-lead {
+    color: var(--text-dim);
+    font-size: 17px;
+    margin-bottom: 32px;
+    max-width: 720px;
+  }
+
+  /* Tools */
+  .tool-cats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .cat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .cat h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    font-family: var(--mono);
+  }
+  .cat-count {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+  .cat ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cat li {
+    font-size: 13px;
+    color: var(--text);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat li:last-child { border-bottom: none; }
+  .cat li code {
+    background: var(--bg-soft);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .badge-public { background: rgba(63, 185, 80, 0.15); color: var(--accent-2); }
+  .badge-agent { background: rgba(210, 153, 34, 0.15); color: var(--warn); }
+
+  /* Bench */
+  .bench-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .bench-table th, .bench-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .bench-table th {
+    background: var(--bg-soft);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .bench-table td { font-size: 14px; }
+  .bench-table tr:last-child td { border-bottom: none; }
+  .bench-table td.num { font-family: var(--mono); text-align: right; }
+  .bench-table td .pct {
+    color: var(--accent-2);
+    font-weight: 700;
+  }
+
+  /* Why */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .why {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .why-icon {
+    width: 40px; height: 40px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+  .why h4 {
+    font-size: 17px;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .why p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 60px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+  footer a { color: var(--text-dim); }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .hero { padding: 40px 0; }
+    h1 { font-size: 36px; }
+    .sub { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">
+      <div class="logo-mark">O</div>
+      <span>OmniCode MCP</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#bench">Benchmarks</a>
+      <a href="#tools">Tools</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/weemadscotsman/omnicode-mcp">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="v">v0.2</span>Coverage-complete code intelligence for AI agents</div>
+    <h1>Stop paying AI to <span class="grad">read the whole file.</span></h1>
+    <p class="sub">OmniCode indexes any repository into a queryable symbol graph, with measured 99.6% token savings, zero unknown files, and a layered 41-tool MCP surface. Plug it into Claude Code, Cursor, Codex, or any MCP client.</p>
+
+    <div class="install">
+      <div class="install-label">INSTALL (one command)</div>
+      <pre><code><span class="prompt">$</span> <span class="cmd">git clone https://github.com/weemadscotsman/omnicode-mcp.git &amp;&amp; cd omnicode-mcp</span>
+<span class="prompt">$</span> <span class="cmd">npm install</span>          <span class="comment"># builds automatically (prepare), compiles native deps</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">99.6%</div>
+      <div class="stat-label">Measured token reduction</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">41</div>
+      <div class="stat-label">Tools total (8 public)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0</div>
+      <div class="stat-label">Unknown files (every file accounted for)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">1,084K</div>
+      <div class="stat-label">Raw tokens → 4.3K payload (PVX-like repo)</div>
+    </div>
+  </div>
+</div>
+
+<section id="bench">
+  <div class="wrap">
+    <h2>Benchmark proof</h2>
+    <p class="section-lead">Every number below is measured: source bytes vs payload bytes, no <code>chars/4</code> hand-waving. Run <code>npm run bench</code> to reproduce.</p>
+
+    <table class="bench-table">
+      <thead>
+        <tr>
+          <th>Operation</th>
+          <th class="num">Baseline bytes</th>
+          <th class="num">Payload bytes</th>
+          <th class="num">Reduction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>index</td><td class="num">1,072,299</td><td class="num">787</td><td class="num"><span class="pct">99.927%</span></td></tr>
+        <tr><td>repo_map</td><td class="num">1,072,299</td><td class="num">4,293</td><td class="num"><span class="pct">99.600%</span></td></tr>
+        <tr><td>search_symbols</td><td class="num">1,072,299</td><td class="num">1,327</td><td class="num"><span class="pct">99.876%</span></td></tr>
+        <tr><td>spaghetti_report</td><td class="num">1,072,299</td><td class="num">9,578</td><td class="num"><span class="pct">99.107%</span></td></tr>
+        <tr><td>file_outline</td><td class="num">49,594</td><td class="num">1,206</td><td class="num"><span class="pct">97.568%</span></td></tr>
+        <tr style="background: var(--bg-soft); font-weight: 700;">
+          <td>CUMULATIVE</td>
+          <td class="num">4,338,790</td>
+          <td class="num">17,191</td>
+          <td class="num"><span class="pct">99.604%</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 20px; color: var(--text-dim); font-size: 14px;">
+      Baseline = measured source bytes. Payload = measured tool-output bytes.
+      <code>baseline_tokens_estimated</code> and <code>payload_tokens_estimated</code> use <code>bytes / 4</code> as a fallback, never the headline.
+      Each row carries a <code>measurement_type</code> so a downstream auditor can verify the methodology. See
+      <a href="https://github.com/weemadscotsman/omnicode-mcp/blob/main/docs/COVERAGE_COMPLETE_BENCHMARK_V2.md">docs/COVERAGE_COMPLETE_BENCHMARK_V2.md</a> for the worked GOTHAM run.
+    </p>
+  </div>
+</section>
+
+<section id="tools">
+  <div class="wrap">
+    <h2>The 41-tool surface</h2>
+    <p class="section-lead">Eight tools are public-facing (visible in the MCP schema). The other thirty-three live behind <code>invoke_tool</code> with RBAC. Read-only by default. <span class="badge badge-public">public</span> = in the schema. <span class="badge badge-agent">agent</span> = writes/mutates, requires agent role.</p>
+
+    <div class="tool-cats">
+      <div class="cat">
+        <h4>SkillVault</h4>
+        <div class="cat-count">3 tools · public</div>
+        <ul>
+          <li><code>skill_search</code><span class="badge badge-public">public</span></li>
+          <li><code>skill_load</code><span class="badge badge-public">public</span></li>
+          <li><code>skill_pack_for_task</code><span class="badge badge-public">public</span></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>System</h4>
+        <div class="cat-count">1 tool · public</div>
+        <ul>
+          <li><code>health_check</code><span class="badge badge-public">public</span></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>MCP / Meta</h4>
+        <div class="cat-count">3 tools · public</div>
+        <ul>
+          <li><code>list_tools</code><span class="badge badge-public">public</span></li>
+          <li><code>get_tool_schema</code><span class="badge badge-public">public</span></li>
+          <li><code>invoke_tool</code><span class="badge badge-public">public</span></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Session</h4>
+        <div class="cat-count">1 tool · public</div>
+        <ul>
+          <li><code>session_resume_brief</code><span class="badge badge-public">public</span></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Index</h4>
+        <div class="cat-count">2 tools · agent</div>
+        <ul>
+          <li><code>index_project</code><span class="badge badge-agent">agent</span></li>
+          <li><code>clone_and_index</code><span class="badge badge-agent">agent</span></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Retrieval</h4>
+        <div class="cat-count">6 tools · read-only</div>
+        <ul>
+          <li><code>search_symbols</code></li>
+          <li><code>get_symbol</code></li>
+          <li><code>get_file_slice</code></li>
+          <li><code>get_file_context</code></li>
+          <li><code>file_outline</code></li>
+          <li><code>get_context_bundle</code></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Map</h4>
+        <div class="cat-count">4 tools · read-only</div>
+        <ul>
+          <li><code>repo_map</code></li>
+          <li><code>route_map</code></li>
+          <li><code>test_map</code></li>
+          <li><code>config_map</code></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Quality</h4>
+        <div class="cat-count">9 tools · read-only</div>
+        <ul>
+          <li><code>spaghetti_report</code></li>
+          <li><code>write_repair_handoff</code></li>
+          <li><code>repair_plan</code> <em>(deprecated v0.2)</em></li>
+          <li><code>dead_code_scan</code></li>
+          <li><code>blindspot_report</code></li>
+          <li><code>blindspot_explorer</code></li>
+          <li><code>language_support</code></li>
+          <li><code>resolve_all</code><span class="badge badge-agent">agent</span></li>
+          <li><code>audit_agent_config</code></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Graph</h4>
+        <div class="cat-count">4 tools · read-only</div>
+        <ul>
+          <li><code>dependency_map</code></li>
+          <li><code>blast_radius</code></li>
+          <li><code>find_references</code></li>
+          <li><code>get_call_hierarchy</code></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Safety</h4>
+        <div class="cat-count">2 tools · agent</div>
+        <ul>
+          <li><code>check_rename_safe</code><span class="badge badge-agent">agent</span></li>
+          <li><code>check_delete_safe</code><span class="badge badge-agent">agent</span></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Planning</h4>
+        <div class="cat-count">1 tool · agent</div>
+        <ul>
+          <li><code>plan_turn</code><span class="badge badge-agent">agent</span></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Git</h4>
+        <div class="cat-count">1 tool · read-only</div>
+        <ul>
+          <li><code>get_churn_rate</code></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Telemetry</h4>
+        <div class="cat-count">3 tools · read-only</div>
+        <ul>
+          <li><code>get_session_stats</code></li>
+          <li><code>token_savings_stats</code></li>
+          <li><code>runtime_telemetry</code></li>
+        </ul>
+      </div>
+
+      <div class="cat">
+        <h4>Benchmark</h4>
+        <div class="cat-count">1 tool · read-only</div>
+        <ul>
+          <li><code>benchmark</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Connect it to your agent</h2>
+    <p class="section-lead">OmniCode is a stdio MCP server, so it plugs into Claude Desktop, Claude Code, Cursor, Codex, Cline, and any MCP client.</p>
+
+    <h3>Claude Code (one command)</h3>
+    <pre><code><span class="prompt">$</span> <span class="cmd">node /path/to/omnicode-mcp/dist/cli.js mcp-config --client claude-code</span></code></pre>
+
+    <h3>Claude Desktop / Cursor shape</h3>
+    <pre><code><span class="cmd">{
+  "mcpServers": {
+    "omnicode": {
+      "command": "/path/to/node",
+      "args": ["/path/to/omnicode-mcp/dist/server.js"]
+    }
+  }
+}</span></code></pre>
+
+    <h3>First call every agent should make</h3>
+    <pre><code><span class="comment">// Returns: branch, last commit, 30-day churn, top contributors,</span>
+<span class="comment">// stack (manifests, frameworks, primary language), top 10 symbols</span>
+<span class="comment">// by importance, indexed state, health, blindspots, exact next action.</span>
+invoke_tool({ tool_name: <span class="prompt">"session_resume_brief"</span>, tool_input: { path: <span class="prompt">"E:/path/to/repo"</span> } })</code></pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why OmniCode</h2>
+    <div class="why-grid">
+      <div class="why">
+        <div class="why-icon">◉</div>
+        <h4>Honest coverage</h4>
+        <p>Every discovered file ends in one of 8 proven resolution states. No silent skips, no fake "100%". If a guard trips, the index says so.</p>
+      </div>
+      <div class="why">
+        <div class="why-icon">◐</div>
+        <h4>Hidden-by-default surface</h4>
+        <p>8 public tools in the LLM's context. 33 more live behind <code>invoke_tool</code> with RBAC. No tool-schema bloat. No agent-side config tax.</p>
+      </div>
+      <div class="why">
+        <div class="why-icon">◑</div>
+        <h4>Audit trail you can trust</h4>
+        <p>Every call records its caller, repo, and a stable SHA-256 of its arguments. Diff the audit table by payload signature to spot anomalous agent behavior.</p>
+      </div>
+      <div class="why">
+        <div class="why-icon">◒</div>
+        <h4>Real PageRank, not edge count</h4>
+        <p>Symbols are ranked by an actual PageRank pass over the import graph. Importance queries mean something. <code>get_top_symbols</code> returns the symbols that matter.</p>
+      </div>
+      <div class="why">
+        <div class="why-icon">▲</div>
+        <h4>Sandbox + repair governor</h4>
+        <p>Path traversal blocked, secrets redacted, destructive edits refused on partial index or unknown repos. The repair governor is opinionated on purpose.</p>
+      </div>
+      <div class="why">
+        <div class="why-icon">▶</div>
+        <h4>One binary, every client</h4>
+        <p>Claude Desktop, Claude Code, Cursor, Codex, Cline, Windsurf, Copilot. <code>omnicode mcp-config --client &lt;name&gt;</code> prints the config block.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>MIT licensed. Built by <a href="https://github.com/weemadscotsman">@weemadscotsman</a>. <a href="https://github.com/weemadscotsman/omnicode-mcp">Source on GitHub</a> · <a href="https://github.com/weemadscotsman/omnicode-mcp/blob/main/CHANGELOG.md">Changelog</a> · <a href="https://github.com/weemadscotsman/omnicode-mcp/blob/main/docs/ARCHITECTURE.md">Architecture</a></p>
+    <p style="margin-top: 12px; font-size: 12px;">Slogan still holds: stop paying AI to read the whole file.</p>
+  </div>
+</footer>
+
+</body>
+</html>

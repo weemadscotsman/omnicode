@@ -1,0 +1,6 @@
+{
+  "name": "OmniCode",
+  "description": "Model-agnostic MCP server indexes your repo. Implements strict RBAC control, fine-grained SIEM auditing, and precise code symbol retrieval for drastically lower token usage.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

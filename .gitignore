@@ -1,0 +1,10 @@
+node_modules/
+.next/
+.omnicode/
+coverage/
+omnicode-mcp/models/
+.DS_Store
+*.log
+*.tsbuildinfo
+.env*
+!.env.example

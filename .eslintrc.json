@@ -1,0 +1,4 @@
+{
+  "extends": "next",
+  "ignorePatterns": ["omnicode-mcp/", "omnicode-mcp/dist/", ".next/"]
+}
